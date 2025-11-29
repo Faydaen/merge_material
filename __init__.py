@@ -74,7 +74,7 @@ def register():
     bpy.utils.register_class(OT_MaterialInfo)
     bpy.utils.register_class(OT_MergeMaterial)
     bpy.utils.register_class(VIEW3D_PT_merge_material)
-    print("register")
+    print("register 2 ")
 
 
 def unregister():
