@@ -46,8 +46,31 @@ class OT_MergeMaterial(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
-        self.report({'INFO'}, "Нажата вторая кнопка")
-        print("Вторая кнопка нажата")
+        text_name = "material_info"
+
+        # Проверяем, что текстовый блок существует
+        if text_name not in bpy.data.texts:
+            self.report({'ERROR'}, "Текстовый блок material_info не найден")
+            return {'CANCELLED'}
+
+        text_block = bpy.data.texts[text_name]
+
+        try:
+            # Читаем весь текст и парсим JSON
+            json_str = text_block.as_string()
+            material_data = json.loads(json_str)
+
+            # Теперь у тебя есть словарь с данными
+            print("Прочитан JSON:", material_data)
+
+            # Здесь можно реализовать логику объединения материалов
+            # например, пройтись по material_data и что-то сделать
+            self.report({'INFO'}, "JSON успешно прочитан из material_info")
+
+        except Exception as e:
+            self.report({'ERROR'}, f"Ошибка чтения JSON: {e}")
+            return {'CANCELLED'}
+
         return {'FINISHED'}
 
 
