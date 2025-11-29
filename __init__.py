@@ -6,6 +6,7 @@ bl_info = {
 
 import bpy
 import json
+from . import material_info
 
 
 # --- Операторы ---
@@ -24,7 +25,7 @@ class OT_MaterialInfo(bpy.types.Operator):
             text_block = bpy.data.texts[text_name]
         
         # Записываем JSON в текстовый блок
-        json_data = {"hello": "world"}
+        json_data = material_info.get_material_info_json()
         text_block.clear()
         text_block.write(json.dumps(json_data, indent=2))
         
