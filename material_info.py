@@ -12,7 +12,7 @@ import bpy
 #     return json_data
 
 
-def get_object_material_textures(obj):
+def get_material_textures(obj):
     """
     Возвращает словарь, где ключи - названия материалов,
     а значения - списки названий файлов текстур (изображений) в этих материалах.
@@ -61,39 +61,41 @@ def get_object_material_textures(obj):
     return material_textures_map
 
 
-def print_armature_meshes():
+def get_material_info():
+    meshes = get_meshes()
+    material_map = {}
+    for mesh in meshes:
+        material_map[mesh.name] = get_material_textures(mesh)
+    return material_map
+
+
+def get_meshes():
+    """
+    Получить все меши у выделенной арматуры (либо сиблинков меши)
+    """
+
     obj = bpy.context.active_object
 
-    material_map = {}
     if obj is None:
-        print("❌ Ошибка: нет активного объекта")
-        return material_map
+        print("Ошибка: нет активного объекта")
+        return []
 
     # Если выделена арматура
     if obj.type == 'ARMATURE':
         armature = obj
         meshes = [child for child in armature.children if child.type == 'MESH']
         if meshes:
-            print(f"Меши арматуры {armature.name}:")
-            for m in meshes:
-                material_map[m.name] = get_object_material_textures(m)
-
-
+            return meshes
         else:
-            print(f"Арматура {armature.name} не имеет дочерних мешей")
-
+            return []
     # Если выделен объект, который является дочерним арматуры
     elif obj.parent and obj.parent.type == 'ARMATURE':
         armature = obj.parent
         meshes = [child for child in armature.children if child.type == 'MESH']
         if meshes:
-            print(f"Меши арматуры {armature.name}:")
-            for m in meshes:
-                material_map[m.name] = get_object_material_textures(m)
+            return meshes
         else:
-            print(f"Арматура {armature.name} не имеет дочерних мешей")
-
+            return []
     else:
-        print("❌ Ошибка: выделите арматуру или её дочерний объект")
-
-    return material_map
+        print("Ошибка: выделите арматуру или её дочерний объект")
+        return []
