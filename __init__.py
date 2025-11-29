@@ -44,9 +44,6 @@ class VIEW3D_PT_merge_material(bpy.types.Panel):
         layout.operator(OT_MaterialInfo.bl_idname)
         layout.operator(OT_MergeMaterial.bl_idname)
 
-        # Большое текстовое поле
-        # layout.label(text="Текстовое поле:")
-        # layout.prop(context.scene, "merge_material_text", text="")
 
 
 # --- Регистрация ---
@@ -56,13 +53,6 @@ def register():
     bpy.utils.register_class(OT_MergeMaterial)
     bpy.utils.register_class(VIEW3D_PT_merge_material)
     print("register")
-    # Добавляем свойство для текстового поля
-    bpy.types.Scene.merge_material_text = bpy.props.StringProperty(
-        name="Merge Material Text",
-        description="Большое текстовое поле",
-        default="",
-        options={'MULTILINE'}  # делает поле многострочным
-    )
 
 
 def unregister():
