@@ -6,6 +6,7 @@ bl_info = {
 
 import bpy
 import json
+import importlib
 from . import material_info
 
 
@@ -71,10 +72,11 @@ class VIEW3D_PT_merge_material(bpy.types.Panel):
 
 # --- Регистрация ---
 def register():
+    importlib.reload(material_info)
     bpy.utils.register_class(OT_MaterialInfo)
     bpy.utils.register_class(OT_MergeMaterial)
     bpy.utils.register_class(VIEW3D_PT_merge_material)
-    print("register 2 ")
+    print("register")
 
 
 def unregister():

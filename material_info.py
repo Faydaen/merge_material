@@ -4,10 +4,10 @@ def get_material_info_json():
     """
     Возвращает JSON с информацией о материалах.
     """
-    json_data = {"Hello": "world 2!"}
+    json_data = {"hello": "world"}
 
-    # active_obj = bpy.context.view_layer.objects.active
-    # json_data =  get_object_material_textures(active_obj)
+    #active_obj = bpy.context.view_layer.objects.active
+    #json_data =  get_object_material_textures(active_obj)
 
     return json_data
 
