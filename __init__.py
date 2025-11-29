@@ -74,6 +74,11 @@ class OT_MergeMaterial(bpy.types.Operator):
         return {'FINISHED'}
 
 
+
+
+
+
+
 # --- Панель ---
 class VIEW3D_PT_merge_material(bpy.types.Panel):
     bl_label = "Merge material"
@@ -90,6 +95,10 @@ class VIEW3D_PT_merge_material(bpy.types.Panel):
         layout.operator(OT_MergeMaterial.bl_idname)
 
 
+def log(message="", title="", icon='INFO'):
+    def draw(self, context):
+        self.layout.label(text=message)
+    bpy.context.window_manager.popup_menu(draw, title=title, icon=icon)
 
 
 
@@ -99,7 +108,8 @@ def register():
     bpy.utils.register_class(OT_MaterialInfo)
     bpy.utils.register_class(OT_MergeMaterial)
     bpy.utils.register_class(VIEW3D_PT_merge_material)
-    print("register")
+    log("register")
+
 
 
 def unregister():

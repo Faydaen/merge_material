@@ -1,16 +1,5 @@
 import bpy
 
-# def get_material_info_json():
-#     """
-#     Возвращает JSON с информацией о материалах.
-#     """
-#     #json_data = {"hello": "world 34"}
-#
-#     active_obj = bpy.context.view_layer.objects.active
-#     json_data =  get_object_material_textures(active_obj)
-#
-#     return json_data
-
 
 def get_material_textures(obj):
     """
