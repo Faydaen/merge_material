@@ -6,25 +6,71 @@ bl_info = {
 
 import bpy
 
-class OT_Test(bpy.types.Operator):
-    bl_idname = "object.test_operator"
-    bl_label = "Test Operator"
+# --- Операторы ---
+class OT_MaterialInfo(bpy.types.Operator):
+    bl_idname = "object.first_button"
+    bl_label = "Material info"
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
-        self.report({'INFO'}, "Работает!")
-        print("Работает")
-
+        self.report({'INFO'}, "Нажата первая кнопка")
+        print("Первая кнопка нажата")
         return {'FINISHED'}
 
+
+class OT_MergeMaterial(bpy.types.Operator):
+    bl_idname = "object.second_button"
+    bl_label = "Merge material"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        self.report({'INFO'}, "Нажата вторая кнопка")
+        print("Вторая кнопка нажата")
+        return {'FINISHED'}
+
+
+# --- Панель ---
+class VIEW3D_PT_merge_material(bpy.types.Panel):
+    bl_label = "Merge material"
+    bl_idname = "VIEW3D_PT_merge_material"
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_category = "Merge material"   # название вкладки в N-панели
+
+    def draw(self, context):
+        layout = self.layout
+
+        # Кнопки
+        layout.operator(OT_MaterialInfo.bl_idname, text="Первая кнопка")
+        layout.operator(OT_MergeMaterial.bl_idname, text="Вторая кнопка")
+
+        # Большое текстовое поле
+        layout.label(text="Текстовое поле:")
+        layout.prop(context.scene, "merge_material_text", text="")
+
+
+# --- Регистрация ---
 def register():
-    print("Addon registered 1")
-    bpy.utils.register_class(OT_Test)
+    bpy.utils.register_class(OT_MaterialInfo)
+    bpy.utils.register_class(OT_MergeMaterial)
+    bpy.utils.register_class(VIEW3D_PT_merge_material)
+
+    # # Добавляем свойство для текстового поля
+    # bpy.types.Scene.merge_material_text = bpy.props.StringProperty(
+    #     name="Merge Material Text",
+    #     description="Большое текстовое поле",
+    #     default="",
+    #     options={'MULTILINE'}  # делает поле многострочным
+    # )
 
 
 def unregister():
-    bpy.utils.unregister_class(OT_Test)
+    del bpy.types.Scene.merge_material_text
+
+    bpy.utils.unregister_class(VIEW3D_PT_merge_material)
+    bpy.utils.unregister_class(OT_MergeMaterial)
+    bpy.utils.unregister_class(OT_MaterialInfo)
+
 
 if __name__ == "__main__":
     register()
-
