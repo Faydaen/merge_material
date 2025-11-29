@@ -10,7 +10,7 @@ import json
 
 # --- Операторы ---
 class OT_MaterialInfo(bpy.types.Operator):
-    bl_idname = "object.first_button"
+    bl_idname = "object.material_info_button"
     bl_label = "Material info"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -39,7 +39,7 @@ class OT_MaterialInfo(bpy.types.Operator):
 
 
 class OT_MergeMaterial(bpy.types.Operator):
-    bl_idname = "object.second_button"
+    bl_idname = "object.merge_material_button"
     bl_label = "Merge material"
     bl_options = {'REGISTER', 'UNDO'}
 
