@@ -43,12 +43,13 @@ class VIEW3D_PT_merge_material(bpy.types.Panel):
         # Кнопки
         layout.operator(OT_MaterialInfo.bl_idname)
         layout.operator(OT_MergeMaterial.bl_idname)
+        
+
 
 
 
 # --- Регистрация ---
 def register():
-
     bpy.utils.register_class(OT_MaterialInfo)
     bpy.utils.register_class(OT_MergeMaterial)
     bpy.utils.register_class(VIEW3D_PT_merge_material)
@@ -56,7 +57,8 @@ def register():
 
 
 def unregister():
-    del bpy.types.Scene.merge_material_text
+    if hasattr(bpy.types.Scene, "merge_material_text"):
+        del bpy.types.Scene.merge_material_text
 
     bpy.utils.unregister_class(VIEW3D_PT_merge_material)
     bpy.utils.unregister_class(OT_MergeMaterial)
