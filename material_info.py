@@ -1,15 +1,15 @@
 import bpy
 
-def get_material_info_json():
-    """
-    Возвращает JSON с информацией о материалах.
-    """
-    json_data = {"hello": "world 34"}
-
-    #active_obj = bpy.context.view_layer.objects.active
-    #json_data =  get_object_material_textures(active_obj)
-
-    return json_data
+# def get_material_info_json():
+#     """
+#     Возвращает JSON с информацией о материалах.
+#     """
+#     #json_data = {"hello": "world 34"}
+#
+#     active_obj = bpy.context.view_layer.objects.active
+#     json_data =  get_object_material_textures(active_obj)
+#
+#     return json_data
 
 
 def get_object_material_textures(obj):
@@ -64,9 +64,10 @@ def get_object_material_textures(obj):
 def print_armature_meshes():
     obj = bpy.context.active_object
 
+    material_map = {}
     if obj is None:
         print("❌ Ошибка: нет активного объекта")
-        return
+        return material_map
 
     # Если выделена арматура
     if obj.type == 'ARMATURE':
@@ -75,7 +76,9 @@ def print_armature_meshes():
         if meshes:
             print(f"Меши арматуры {armature.name}:")
             for m in meshes:
-                print(" -", m.name)
+                material_map[m.name] = get_object_material_textures(m)
+
+
         else:
             print(f"Арматура {armature.name} не имеет дочерних мешей")
 
@@ -86,9 +89,11 @@ def print_armature_meshes():
         if meshes:
             print(f"Меши арматуры {armature.name}:")
             for m in meshes:
-                print(" -", m.name)
+                material_map[m.name] = get_object_material_textures(m)
         else:
             print(f"Арматура {armature.name} не имеет дочерних мешей")
 
     else:
         print("❌ Ошибка: выделите арматуру или её дочерний объект")
+
+    return material_map
