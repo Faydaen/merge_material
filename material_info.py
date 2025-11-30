@@ -159,17 +159,19 @@ def merge_materials(material_data):
         # if object_name != "Genesis8Female.Shape":
         #     continue
 
+        print(f"\n\n------------- {object_name} ----------------")
 
         for material_info in materials_list:
             new_name = material_info["target"]
             list_materials = material_info["list"]
 
-            print(f"\n\n ------------- {object_name}\\{new_name} ----------------")
 
             merge_duplicate_materials(object_name, list_materials, new_name)
 
 
 def merge_duplicate_materials(obj_name: str, material_names: list, new_material_name: str):
+
+    print(f"\nОбрабатываем материалы для {new_material_name}")
     # объект
     obj = bpy.data.objects.get(obj_name)
     if obj is None:
@@ -184,15 +186,16 @@ def merge_duplicate_materials(obj_name: str, material_names: list, new_material_
     main = mats[0]
 
     if len(mats) == 1:
-        print("Всего один материал")
-        main.name = new_material_name
+        material_name = mats[0].name
+        print(f"- {material_name} имеет всего один материал - переименовываем в {new_material_name}")
+        main.name = new_material_name # переименовываем
         return
 
 
     # Индексы материалов в объекте
     mat_indices = {slot.material: i for i, slot in enumerate(obj.material_slots)}
 
-    print_mat_list(mat_indices)
+    ###### print_mat_list(mat_indices)
 
     # Индекс основного
     main_index = mat_indices.get(main)
@@ -207,7 +210,16 @@ def merge_duplicate_materials(obj_name: str, material_names: list, new_material_
     # Индексы заменяемых материалов
     replace_indices = {mat_indices[m] for m in replace_materials if m in mat_indices}
 
-    print(f"{main_index} -> {replace_indices}")
+    ###### print_mat_list(mat_indices) print(f"{main_index} -> {replace_indices}")
+
+    for mat, indices in mat_indices.items():
+        if indices in replace_indices:
+            print(f"- {mat.name}: {indices} [заменяем на {main.name}: {main_index}]")
+        elif indices == main_index:
+            print(f"- {mat.name}: {indices} [главный индекс]")
+        else:
+            print(f"- {mat.name}: {indices}")
+
 
 
     # Переназначаем **в полигонах**
@@ -218,8 +230,8 @@ def merge_duplicate_materials(obj_name: str, material_names: list, new_material_
 
 
 
-    print("Материалы на удаление:")
-    print_removable(replace_materials, obj)
+    ###### print_mat_list(mat_indices) print("Материалы на удаление:")
+    ###### print_mat_list(mat_indices) print_removable(replace_materials, obj)
 
     # Теперь убираем старые материалы из слотов
     # Удалять будем справа налево, чтобы индексы не сбивались
