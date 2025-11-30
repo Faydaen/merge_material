@@ -54,11 +54,25 @@ def get_material_info():
     meshes = get_meshes()
     material_map = {}
     for mesh in meshes:
+
+
+        # получаем список тестур для каждого материала
         material_textures = get_material_textures(mesh)
-        # material_map[mesh.name] = {"info":None, "map":None}
-        # material_map[mesh.name]["info"] = material_textures
-        # material_map[mesh.name]["map"] = group_identical_materials(material_textures)
-        material_map[mesh.name] = group_identical_materials(material_textures)
+
+        # получаем "список списков" одинаковых материалов
+        grouped_materials = group_identical_materials(material_textures)
+
+        # пробегаемся по спискам одинаковых материалов
+        # и отдельно записывам название первого материла
+        # чтобы можно было переименовывать
+        material_map[mesh.name] = []
+        for grouped_material in grouped_materials:
+            material_map[mesh.name].append({
+                "list":grouped_material,
+                "target": grouped_material[0]
+            })
+
+
     return material_map
 
 
@@ -134,3 +148,5 @@ def group_identical_materials(material_textures):
 
     # Возвращаем только значения словаря (списки материалов)
     return list(texture_to_materials.values())
+
+
