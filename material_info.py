@@ -150,3 +150,70 @@ def group_identical_materials(material_textures):
     return list(texture_to_materials.values())
 
 
+# ------------------ сливание материалов -----------------
+
+def merge_materials(material_data):
+    for object_name, materials_list in material_data.items():
+        print(f"\nОбъект: {object_name}")
+        for material_info in materials_list:
+            new_name = material_info["target"]
+            list_materials = material_info["list"]
+            print(f"новое имя {new_name}")
+            print(list_materials)
+
+        # print(materials_info["list"])
+        # new_name = material_data[obj_name][0]["target"]
+        # materials_names = material_data[obj_name][0]["list"]
+
+
+
+
+
+
+
+
+
+# def merge_duplicate_materials(obj_name: str, material_names: list, new_material_name: str):
+#     # Получаем объект
+#     obj = bpy.data.objects.get(obj_name)
+#     if obj is None:
+#         print(f"Object '{obj_name}' not found.")
+#         return
+#
+#     # Фильтруем существующие материалы
+#     existing_mats = [bpy.data.materials.get(name) for name in material_names]
+#     existing_mats = [m for m in existing_mats if m is not None]
+#
+#     if not existing_mats:
+#         print("No valid materials found.")
+#         return
+#
+#     # Берём первый материал как основной
+#     main_mat = existing_mats[0]
+#     main_mat.name = new_material_name
+#
+#     # Карта старых материалов → новый
+#     mat_map = {m.name: main_mat for m in existing_mats}
+#
+#     # Перебираем слоты материалов объекта
+#     for slot in obj.material_slots:
+#         if slot.material and slot.material.name in mat_map:
+#             slot.material = main_mat
+#
+#     # Теперь удаляем старые материалы (кроме основного)
+#     for mat in existing_mats[1:]:
+#         # Удаление только если материал больше нигде не используется
+#         try:
+#             bpy.data.materials.remove(mat)
+#         except RuntimeError:
+#             # Если материал используется — просто пропускаем
+#             print(f"Cannot remove material '{mat.name}', it is still used somewhere.")
+#
+#     print(f"Merged materials {material_names} into '{new_material_name}'.")
+
+
+# def edit_mesh(object_name):
+#     """перейти в режим редаткирования объетка, сбросив выдление со всех вертекстов"""
+#     bpy.context.view_layer.objects.active = bpy.data.objects[object_name]
+#     bpy.ops.object.mode_set(mode='EDIT')
+#     bpy.ops.mesh.select_all(action='DESELECT')

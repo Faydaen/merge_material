@@ -60,8 +60,8 @@ class OT_MergeMaterial(bpy.types.Operator):
             json_str = text_block.as_string()
             material_data = json.loads(json_str)
 
-            # Теперь у тебя есть словарь с данными
-            print("Прочитан JSON:", material_data)
+            # Передаём его в обработчик
+            material_info.merge_materials(material_data)
 
             # Здесь можно реализовать логику объединения материалов
             # например, пройтись по material_data и что-то сделать
