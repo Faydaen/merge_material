@@ -54,7 +54,11 @@ def get_material_info():
     meshes = get_meshes()
     material_map = {}
     for mesh in meshes:
-        material_map[mesh.name] = get_material_textures(mesh)
+        material_textures = get_material_textures(mesh)
+        # material_map[mesh.name] = {"info":None, "map":None}
+        # material_map[mesh.name]["info"] = material_textures
+        # material_map[mesh.name]["map"] = group_identical_materials(material_textures)
+        material_map[mesh.name] = group_identical_materials(material_textures)
     return material_map
 
 
@@ -88,3 +92,45 @@ def get_meshes():
     else:
         print("Ошибка: выделите арматуру или её дочерний объект")
         return []
+
+
+def group_identical_materials(material_textures):
+    """
+    Группирует материалы, которые имеют одинаковый набор текстур,
+    пустые массивы не считаются одинаковыми
+
+    Args:
+        material_textures (dict): Словарь вида 
+          {'material_name': ['texture_name_1', 'texture_name_2'], ...}
+          (Результат функции get_material_info).
+
+    Returns:
+        list: Список списков, где каждый внутренний список содержит названия 
+              одинаковых материалов.
+              Например: [['mat_a', 'mat_a2', 'mat_a3'], ['mat_b']]
+    """
+
+    # Словарь для группировки: ключ - уникальная комбинация текстур (кортеж),
+    # значение - список материалов, использующих эту комбинацию.
+    texture_to_materials = {}
+
+    for material_name, texture_list in material_textures.items():
+
+
+        if len(texture_list) == 0:
+            continue
+
+        # 1. Сортируем список текстур, чтобы порядок не имел значения.
+        # 2. Преобразуем в кортеж, чтобы использовать его как неизменяемый ключ словаря.
+        #    Если материал не имеет текстур, ключ будет пустым кортежем ().
+        sorted_texture_key = tuple(sorted(texture_list))
+
+        # Добавляем материал в соответствующую группу
+        if sorted_texture_key in texture_to_materials:
+            texture_to_materials[sorted_texture_key].append(material_name)
+        else:
+            # Создаем новую группу для этой комбинации текстур
+            texture_to_materials[sorted_texture_key] = [material_name]
+
+    # Возвращаем только значения словаря (списки материалов)
+    return list(texture_to_materials.values())
