@@ -153,82 +153,87 @@ def group_identical_materials(material_textures):
 # ------------------ сливание материалов -----------------
 
 def merge_materials(material_data):
-    # merge_duplicate_materials("Genesis8Female.Shape", ['Torso'], "Body")
-    # merge_duplicate_materials("Genesis8Female.Shape", ['Face', 'Lips', 'Ears', 'EyeSocket'], "Face")
-    # merge_duplicate_materials("Genesis8Female.Shape", ['Teeth', 'Mouth'], "Mouth")
-    # merge_duplicate_materials("Genesis8Female.Shape", ['Legs', 'Toenails'], "Legs")
-    # merge_duplicate_materials("Genesis8Female.Shape", ['Arms', 'Fingernails'], "Arms")
-    # merge_duplicate_materials("Genesis8Female.Shape", ['Pupils', 'Irises', 'Sclera'], "Eyes")
-    # merge_duplicate_materials("Genesis8Female.Shape", ['Genitalia'], "Genitalia")
-    #
-    # merge_duplicate_materials("Genesis8FemaleEyelashes.Shape", ['Eyelashes'], "Eyelashes")
-    # merge_duplicate_materials("Rigel Hair G8.Shape", ['scalp'], "scalp")
-    # merge_duplicate_materials("Rigel Hair G8.Shape", ['hair1', 'hair3', 'hair2', 'strand1', 'strand2'], "hair1")
-    # return
 
-
-    material_to_delete = []
+    tasks = {}
     for object_name, materials_list in material_data.items():
-
-        print(f"\n\n------------- {object_name} ----------------")
+        tasks[object_name] = {
+            "rename":{},
+            "delete":[]
+        }
 
         for material_info in materials_list:
             new_name = material_info["target"]
             list_materials = material_info["list"]
 
+            result = merge_duplicate(object_name, list_materials)
 
-            merge_duplicate_materials(object_name, list_materials, new_name)
+            old_name = result['old_name']
+
+            if old_name != new_name:
+                tasks[object_name]["rename"][old_name] = new_name
+            tasks[object_name]["delete"].extend(result['delete'])
 
 
-def merge_duplicate_materials(obj_name: str, material_names: list, new_material_name: str):
+    for obj_name, task in tasks.items():
+        obj = bpy.data.objects[obj_name]
+        delete_materials_on_obj(obj, task["delete"])
+        rename_materials_on_obj(obj, task["rename"])
 
-    print(f"\nОбрабатываем материалы для {new_material_name}")
+
+def rename_materials_on_obj(obj, rename_list):
+    mats = obj.data.materials
+    for mat in mats:
+        if mat and mat.name in rename_list:
+            mat.name = rename_list[mat.name]
+
+
+def delete_materials_on_obj(obj, delete_list):
+
+    mats = obj.data.materials
+
+    # Идём по индексам с конца списка
+    for i in reversed(range(len(mats))):
+        mat = mats[i]
+        if mat and mat.name in delete_list:
+            mats.pop(index=i)  # Удаляем материал из слотов
+
+
+
+def merge_duplicate(obj_name: str, material_names: list):
+
+    result = {
+        "old_name":None,
+        "delete":[]
+    }
 
     # объект
     obj = bpy.data.objects.get(obj_name)
-    if obj is None:
-        print(f"Object '{obj_name}' not found.")
-        return
 
-    # собрать материалы которые собираемся слить
-    mats = [bpy.data.materials.get(name) for name in material_names]
-    mats = [m for m in mats if m is not None]
+    # материалы которые собираемся слить
+    materials_to_merge = [bpy.data.materials.get(name) for name in material_names]
 
-    # основной материал (оставляем его)
-    main = mats[0]
+    # основной материал (в которого мы будмем сливать остальные)
+    main = materials_to_merge[0]
 
-    if len(mats) == 1:
-        material_name = mats[0].name
-        print(f"- {material_name} имеет всего один материал - переименовываем в {new_material_name}")
-        main.name = new_material_name # переименовываем
-        return
+    result["old_name"] = main.name
 
+    if len(materials_to_merge) == 1:
+        return result
 
     # Индексы материалов в объекте
     mat_indices = {slot.material: i for i, slot in enumerate(obj.material_slots)}
 
-
     # Индекс основного
     main_index = mat_indices.get(main)
 
-    if main_index is None:
-        print("Main material not found in object's slots.")
-        return
-
     # Все остальные материалы (которые нужно заменить)
-    replace_materials = mats[1:]
+    replace_materials = materials_to_merge[1:]
+
+    # помечаем на удаление
+    result["delete"] = [mat.name for mat in replace_materials]
 
     # Индексы заменяемых материалов
     replace_indices = {mat_indices[m] for m in replace_materials if m in mat_indices}
-
-    for mat, indices in mat_indices.items():
-        if indices in replace_indices:
-            print(f"- {mat.name}: {indices} [заменяем на {main.name}: {main_index}]")
-        elif indices == main_index:
-            print(f"- {mat.name}: {indices} [главный индекс]")
-        else:
-            print(f"- {mat.name}: {indices}")
-
 
     # Переназначаем **в полигонах**
     if obj.data.materials:
@@ -236,40 +241,4 @@ def merge_duplicate_materials(obj_name: str, material_names: list, new_material_
             if poly.material_index in replace_indices:
                 poly.material_index = main_index
 
-    # Теперь убираем старые материалы из слотов
-    # Удалять будем справа налево, чтобы индексы не сбивались
-    for mat in replace_materials:
-        idx = obj.material_slots.find(mat.name)
-        if idx != -1:
-            obj.active_material_index = idx
-            bpy.ops.object.material_slot_remove()
-            # Удаляем материал из файла
-            bpy.data.materials.remove(mat)
-
-
-    # переименовывам только после того как удалили все другие матеиалы
-    # чтобы не было конфликтов
-    main.name = new_material_name
-
-    print(f"Merged {material_names} into '{new_material_name}'.")
-
-
-
-
-def delete_material_global(mat_name: str):
-    mat = bpy.data.materials.get(mat_name)
-    if mat is None:
-        print(f"Material '{mat_name}' not found.")
-        return
-
-    # 1. Убираем фейкового пользователя
-    mat.use_fake_user = False
-
-    # 2. Проверяем, что материал действительно не используется
-    if mat.users > 0:
-        print(f"Cannot delete '{mat_name}' — it still has {mat.users} users.")
-        return
-
-    # 3. Удаляем
-    bpy.data.materials.remove(mat)
-    print(f"Material '{mat_name}' removed globally.")
+    return result
