@@ -240,13 +240,13 @@ def merge_duplicate_materials(obj_name: str, material_names: list, new_material_
     # Теперь убираем старые материалы из слотов
     # Удалять будем справа налево, чтобы индексы не сбивались
     for mat in replace_materials:
-        try:
-            idx = obj.material_slots.find(mat.name)
-            if idx != -1:
-                obj.active_material_index = idx
-                bpy.ops.object.material_slot_remove()
-        except:
-            print("что-то пошло не так")
+        idx = obj.material_slots.find(mat.name)
+        if idx != -1:
+            obj.active_material_index = idx
+            bpy.ops.object.material_slot_remove()
+            # Удаляем материал из файла
+            bpy.data.materials.remove(mat)
+
 
     # переименовывам только после того как удалили все другие матеиалы
     # чтобы не было конфликтов
@@ -254,3 +254,24 @@ def merge_duplicate_materials(obj_name: str, material_names: list, new_material_
 
     print(f"Merged {material_names} into '{new_material_name}'.")
 
+
+# delete_material_global("Lips")
+
+
+def delete_material_global(mat_name: str):
+    mat = bpy.data.materials.get(mat_name)
+    if mat is None:
+        print(f"Material '{mat_name}' not found.")
+        return
+
+    # 1. Убираем фейкового пользователя
+    mat.use_fake_user = False
+
+    # 2. Проверяем, что материал действительно не используется
+    if mat.users > 0:
+        print(f"Cannot delete '{mat_name}' — it still has {mat.users} users.")
+        return
+
+    # 3. Удаляем
+    bpy.data.materials.remove(mat)
+    print(f"Material '{mat_name}' removed globally.")
