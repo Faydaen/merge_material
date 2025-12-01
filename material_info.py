@@ -167,6 +167,7 @@ def merge_materials(material_data):
     # return
 
 
+    material_to_delete = []
     for object_name, materials_list in material_data.items():
 
         print(f"\n\n------------- {object_name} ----------------")
@@ -181,8 +182,6 @@ def merge_materials(material_data):
 
 def merge_duplicate_materials(obj_name: str, material_names: list, new_material_name: str):
 
-    print(f"merge_duplicate_materials(\"{obj_name}\", {material_names}, \"{new_material_name}\")")
-
     print(f"\nОбрабатываем материалы для {new_material_name}")
 
     # объект
@@ -191,7 +190,7 @@ def merge_duplicate_materials(obj_name: str, material_names: list, new_material_
         print(f"Object '{obj_name}' not found.")
         return
 
-    # собрать материалы
+    # собрать материалы которые собираемся слить
     mats = [bpy.data.materials.get(name) for name in material_names]
     mats = [m for m in mats if m is not None]
 
@@ -255,7 +254,6 @@ def merge_duplicate_materials(obj_name: str, material_names: list, new_material_
     print(f"Merged {material_names} into '{new_material_name}'.")
 
 
-# delete_material_global("Lips")
 
 
 def delete_material_global(mat_name: str):
