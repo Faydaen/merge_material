@@ -153,7 +153,6 @@ def group_identical_materials(material_textures):
 # ------------------ сливание материалов -----------------
 
 def merge_materials(material_data):
-
     tasks = {}
     for object_name, materials_list in material_data.items():
         tasks[object_name] = {
@@ -178,25 +177,6 @@ def merge_materials(material_data):
         obj = bpy.data.objects[obj_name]
         delete_materials_on_obj(obj, task["delete"])
         rename_materials_on_obj(obj, task["rename"])
-
-
-def rename_materials_on_obj(obj, rename_list):
-    mats = obj.data.materials
-    for mat in mats:
-        if mat and mat.name in rename_list:
-            mat.name = rename_list[mat.name]
-
-
-def delete_materials_on_obj(obj, delete_list):
-
-    mats = obj.data.materials
-
-    # Идём по индексам с конца списка
-    for i in reversed(range(len(mats))):
-        mat = mats[i]
-        if mat and mat.name in delete_list:
-            mats.pop(index=i)  # Удаляем материал из слотов
-
 
 
 def merge_duplicate(obj_name: str, material_names: list):
@@ -242,3 +222,19 @@ def merge_duplicate(obj_name: str, material_names: list):
                 poly.material_index = main_index
 
     return result
+
+
+def rename_materials_on_obj(obj, rename_list):
+    mats = obj.data.materials
+    for mat in mats:
+        if mat and mat.name in rename_list:
+            mat.name = rename_list[mat.name]
+
+
+def delete_materials_on_obj(obj, delete_list):
+    mats = obj.data.materials
+    # Идём по индексам с конца списка
+    for i in reversed(range(len(mats))):
+        mat = mats[i]
+        if mat and mat.name in delete_list:
+            mats.pop(index=i)  # Удаляем материал из слотов
